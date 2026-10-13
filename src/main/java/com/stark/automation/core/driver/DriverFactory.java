@@ -1,0 +1,10 @@
+package com.stark.automation.core.driver;
+import com.stark.automation.config.ConfigurationManager; import com.stark.automation.core.exceptions.UnsupportedBrowserException;
+import io.github.bonigarcia.wdm.WebDriverManager; import org.openqa.selenium.WebDriver; import org.openqa.selenium.chrome.ChromeOptions; import org.openqa.selenium.edge.EdgeOptions; import org.openqa.selenium.firefox.FirefoxOptions; import org.openqa.selenium.chrome.ChromeDriver; import org.openqa.selenium.edge.EdgeDriver; import org.openqa.selenium.firefox.FirefoxDriver; import org.slf4j.Logger; import org.slf4j.LoggerFactory;
+public final class DriverFactory {
+ private static final Logger LOG = LoggerFactory.getLogger(DriverFactory.class); private static final ThreadLocal<WebDriver> DRIVER = new ThreadLocal<>();
+ private DriverFactory() { }
+ public static void start() { if (DRIVER.get() != null) return; String browser = ConfigurationManager.value("browser").toLowerCase(); boolean headless = ConfigurationManager.flag("headless"); LOG.info("Starting {} browser (headless={}) for {}", browser, headless, ConfigurationManager.environment()); switch (browser) { case "chrome" -> { WebDriverManager.chromedriver().setup(); ChromeOptions o = new ChromeOptions(); if (headless) o.addArguments("--headless=new"); o.addArguments("--window-size=1440,900"); DRIVER.set(new ChromeDriver(o)); } case "firefox" -> { WebDriverManager.firefoxdriver().setup(); FirefoxOptions o = new FirefoxOptions(); if (headless) o.addArguments("-headless"); DRIVER.set(new FirefoxDriver(o)); } case "edge" -> { WebDriverManager.edgedriver().setup(); EdgeOptions o = new EdgeOptions(); if (headless) o.addArguments("--headless=new"); o.addArguments("--window-size=1440,900"); DRIVER.set(new EdgeDriver(o)); } default -> throw new UnsupportedBrowserException(browser); } }
+ public static WebDriver getDriver() { WebDriver driver = DRIVER.get(); if (driver == null) throw new IllegalStateException("WebDriver has not been initialized for this thread."); return driver; }
+ public static void quit() { WebDriver driver = DRIVER.get(); if (driver != null) { driver.quit(); DRIVER.remove(); LOG.info("Browser closed"); } }
+}

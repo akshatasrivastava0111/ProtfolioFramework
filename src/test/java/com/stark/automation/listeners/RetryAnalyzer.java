@@ -1,0 +1,3 @@
+package com.stark.automation.listeners;
+import com.stark.automation.config.ConfigurationManager; import org.slf4j.Logger; import org.slf4j.LoggerFactory; import org.testng.IRetryAnalyzer; import org.testng.ITestResult;
+public class RetryAnalyzer implements IRetryAnalyzer { private static final Logger LOG = LoggerFactory.getLogger(RetryAnalyzer.class); private int attempts; @Override public boolean retry(ITestResult result) { int limit = ConfigurationManager.integer("retry.count"); if (attempts++ < limit) { LOG.warn("Retrying {} (attempt {}/{})", result.getMethod().getMethodName(), attempts, limit); return true; } return false; } }

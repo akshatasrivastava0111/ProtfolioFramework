@@ -1,0 +1,3 @@
+package com.stark.automation.dataproviders;
+import com.fasterxml.jackson.core.type.TypeReference; import com.stark.automation.utils.TestDataReader; import java.util.List; import org.testng.annotations.DataProvider;
+public final class LoginDataProvider { public record LoginCase(String username, String password, String expectedError) { } private LoginDataProvider() { } @DataProvider(name = "invalidLogins") public static Object[][] invalidLogins() { List<LoginCase> cases = TestDataReader.list("test-data/ui/login.json", new TypeReference<>() { }); return cases.stream().map(item -> new Object[]{item}).toArray(Object[][]::new); } }

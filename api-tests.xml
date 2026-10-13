@@ -1,0 +1,1 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd"><suite name="API Automation"><listeners><listener class-name="com.stark.automation.listeners.TestListener"/></listeners><test name="API tests"><classes><class name="com.stark.automation.api.tests.PostApiTests"/></classes></test></suite>

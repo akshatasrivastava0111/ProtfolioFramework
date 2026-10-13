@@ -1,0 +1,6 @@
+package com.stark.automation.ui.tests;
+import com.stark.automation.base.UiBaseTest; import com.stark.automation.config.ConfigurationManager; import com.stark.automation.dataproviders.LoginDataProvider.LoginCase; import com.stark.automation.listeners.RetryAnalyzer; import com.stark.automation.pages.LoginPage; import io.qameta.allure.*; import org.testng.Assert; import org.testng.annotations.Listeners; import org.testng.annotations.Test;
+@Listeners(com.stark.automation.listeners.TestListener.class) public class LoginTests extends UiBaseTest {
+ @Test(retryAnalyzer = RetryAnalyzer.class) @Description("A valid demo user can reach the product inventory.") public void validLoginShowsProducts() { Assert.assertTrue(new LoginPage().open(ConfigurationManager.value("base.url")).loginAs("standard_user", "secret_sauce").isDisplayed(), "Product inventory should be visible after login"); }
+ @Test(dataProvider = "invalidLogins", dataProviderClass = com.stark.automation.dataproviders.LoginDataProvider.class, retryAnalyzer = RetryAnalyzer.class) public void invalidLoginShowsHelpfulError(LoginCase testCase) { String error = new LoginPage().open(ConfigurationManager.value("base.url")).loginAs(testCase.username(), testCase.password()).errorMessage(); Assert.assertTrue(error.contains(testCase.expectedError()), "Expected a helpful validation error"); }
+}
